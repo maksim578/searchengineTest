@@ -11,6 +11,6 @@
         <sql>ALTER TABLE site AUTO_INCREMENT = 1;</sql>
         <sql>ALTER TABLE page AUTO_INCREMENT = 1;</sql>
         <sql>ALTER TABLE lemma AUTO_INCREMENT = 1;</sql>
-        <sql>ALTER TABLE `index` AUTO_INCREMENT = 1;</sql>
+        <sql>ALTER TABLE index_data AUTO_INCREMENT = 1;</sql>
     </changeSet>
 </databaseChangeLog>

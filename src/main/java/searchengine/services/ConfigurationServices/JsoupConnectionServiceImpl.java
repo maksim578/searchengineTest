@@ -1,11 +1,11 @@
-package searchengine.config.services.ConfigurationServices;
+package searchengine.services.ConfigurationServices;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 import searchengine.config.IndexingSettings;
-import searchengine.config.services.impl.JsoupConnectionService;
+import searchengine.services.impl.JsoupConnectionService;
 
 import java.io.IOException;
 

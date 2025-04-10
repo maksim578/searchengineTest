@@ -1,4 +1,4 @@
-package searchengine.services;
+package searchengine.services.indexing;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;

@@ -1,4 +1,4 @@
-package searchengine.config.services.ConfigurationServices.ServicesFlowManagement;
+package searchengine.services.ConfigurationServices.ServicesFlowManagement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

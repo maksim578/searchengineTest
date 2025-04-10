@@ -1,4 +1,4 @@
-package searchengine.services;
+package searchengine.services.indexing;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

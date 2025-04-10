@@ -1,9 +1,9 @@
-package searchengine.config.services.ConfigurationServices;
+package searchengine.services.ConfigurationServices;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import searchengine.config.services.ConfigurationServices.ServicesFlowManagement.IndexingStatusManager;
+import searchengine.services.ConfigurationServices.ServicesFlowManagement.IndexingStatusManager;
 import searchengine.models.Site;
 import searchengine.models.Status;
 import searchengine.repositories.SiteRepository;
@@ -56,7 +56,7 @@ public class SiteServicesStatus {
             site.setUrl(siteUrl);
             site.setStatus(Status.INDEXING);
             site.setStatusTime(LocalDateTime.now());
-            site.setName(UrlUtils.removeProtocolAndSubdomain(siteUrl));
+            site.setName(UrlUtils.getDomainFromUrl(siteUrl));
             logger.info("Инициализация сайта {} прошла успешно.", siteUrl);
             return siteRepository.save(site);
         }

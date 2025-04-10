@@ -1,4 +1,4 @@
-package searchengine.services;
+package searchengine.services.indexing;
 
 import lombok.Getter;
 import org.slf4j.Logger;
@@ -54,10 +54,6 @@ public class SitesIndexingService {
     }
 
     //TODO Прописать остановку по требованию. Протестить.
-    // Начал пилить индексацию одной страницы после полной индексации - проблемы соединения с БД (Read timed out)...
-    //       *догадка, что не была закончена сессия и попытка создать новую сессию при запуске indexPage*
-    // Проверить одностраничную индексацию, удалив одну страницу после полной индексации.
-    //
 
 
     public void indexSites(List<String> siteUrls) {

@@ -1,14 +1,19 @@
+# если будет www и https:// проверка в CheckLinkInScopeLinks не пройдется!
+
+app:
+  time-threshold-seconds: 10     # Простой индексации перед завершением (>3 сек. для 1 сайта).
+
 indexing-settings:
   sites:
-#    - url: https://volochek.life/
+#    - url: https://volochek.life
 #      name: volochek.life.ru
-#    - url: https://www.skillbox.ru
-#      name: Skillbox
-    - url: https://www.playback.ru
-      name: PlayBack.Ru
+    - url: https://skillbox.ru
+      name: Skillbox
+#    - url: https://playback.ru
+#      name: PlayBack.Ru
   user-agent: "HeliontSearchBot"
   referrer: "http://www.google.com"
-  delay: 2000
+  delay: 4000
 
 server:
   port: 8080
@@ -21,10 +26,20 @@ spring:
 
   liquibase:
     change-log: classpath:db/changelog/changes/db.changelog-master.xml
+    clear-checksums: true
 
   jpa:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
+
     hibernate:
-    show-sql: false
+      show-sql: false
+
+logging:
+  file:
+    name: logs/deadlocks.log
+  level:
+      org.hibernate.engine.jdbc.spi.SqlExceptionHelper: ERROR
+      org.springframework.transaction: DEBUG
+      org.hibernate.exception: ERROR

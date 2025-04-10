@@ -1,4 +1,4 @@
-package searchengine.services.ConfigurationServices;
+package searchengine.services.indexing;
 
 import org.apache.lucene.morphology.LuceneMorphology;
 import org.apache.lucene.morphology.russian.RussianLuceneMorphology;
@@ -74,9 +74,5 @@ public class LemmaAnalyzerService {
 
     private String removeHTMLTags(String HTMLContent){
         return HTMLContent.replaceAll("<.*?>", "").trim();
-    }
-
-    public boolean isUrlAllowed(String url){
-        return sites.stream().anyMatch(site -> url.startsWith(site.getName()));
     }
 }

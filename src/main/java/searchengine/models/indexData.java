@@ -5,8 +5,8 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table(name = "lemma_index")
-public class LemmaIndex {
+@Table(name = "index_data")
+public class indexData {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

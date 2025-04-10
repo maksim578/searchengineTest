@@ -1,7 +1,8 @@
-package searchengine.services;
+package searchengine.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import searchengine.models.Index;
+import searchengine.models.indexData;
 
-public class LemmaIndexRepository extends JpaRepository<Index, Long> {
+public interface LemmaIndexRepository extends JpaRepository<indexData, Long> {
+    boolean existsByLemmaIdAndPageId(int lemmaId, int pageId);
 }

@@ -1,4 +1,4 @@
-package searchengine.services;
+package searchengine.services.indexing;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -61,13 +61,10 @@ public class SaveLemmasAndIndexInBD implements LemmaIndexService {
             indexes.add(index);
         });
 
-        // Пакетная вставка новых лемм
         batchInsertLemmas(newLemmas);
 
-        // Пакетное обновление частот существующих лемм
         batchUpdateLemmaFrequencies(existingLemmas);
 
-        // Пакетная вставка индексов
         batchInsertIndexes(indexes);
     }
 

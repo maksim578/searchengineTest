@@ -1,11 +1,10 @@
-package searchengine.services;
+package searchengine.services.indexing;
 
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 import searchengine.models.PageResult;
 import searchengine.models.Site;
 import searchengine.repositories.SiteRepository;
-import searchengine.services.ConfigurationServices.LemmaAnalyzerService;
 
 import java.time.LocalDateTime;
 import java.util.Map;
