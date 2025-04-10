@@ -1,10 +1,30 @@
-# example values
-
 indexing-settings:
   sites:
-    - url: https://www.lenta.ru
-      name: Лента.ру
-    - url: https://www.skillbox.ru
-      name: Skillbox
+#    - url: https://volochek.life/
+#      name: volochek.life.ru
+#    - url: https://www.skillbox.ru
+#      name: Skillbox
     - url: https://www.playback.ru
       name: PlayBack.Ru
+  user-agent: "HeliontSearchBot"
+  referrer: "http://www.google.com"
+  delay: 2000
+
+server:
+  port: 8080
+
+spring:
+  datasource:
+    username: root
+    password: 578578
+    url: jdbc:mysql://localhost:3306/search_engine
+
+  liquibase:
+    change-log: classpath:db/changelog/changes/db.changelog-master.xml
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+    show-sql: false
