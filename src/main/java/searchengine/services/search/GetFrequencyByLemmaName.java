@@ -9,19 +9,18 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class FrequencyFilter {
+public class FrequencyByLemmaName {                            //TODO Переименовать.
     private final LemmaRepository lemmaRepository;
     private final FilterLemmasBySiteName filterLemmasBySiteName;
-    private final Logger logger = LoggerFactory.getLogger(FrequencyFilter.class);
+    private final Logger logger = LoggerFactory.getLogger(FrequencyByLemmaName.class);
 
-    public FrequencyFilter(LemmaRepository lemmaRepository,
-                           FilterLemmasBySiteName filterLemmasBySiteName) {
+    public FrequencyByLemmaName(LemmaRepository lemmaRepository,
+                                FilterLemmasBySiteName filterLemmasBySiteName) {
         this.lemmaRepository = lemmaRepository;
         this.filterLemmasBySiteName = filterLemmasBySiteName;
     }
 
-    public Map<String, Integer> filterCollection(String[] lemmasArr, String siteUrl){
-
+    public Map<String, Integer> getFrequencyAndLemma(String[] lemmasArr, String siteUrl){
 
         Map<String, Integer> unsortedMap = Arrays.stream(lemmasArr)
                 .map(this::getLemmasAndFrequencyFromDB)
@@ -32,20 +31,7 @@ public class FrequencyFilter {
                         Integer::max
                 ));
 
-            unsortedMap = filterLemmasBySiteName.filterLemmas(unsortedMap, siteUrl);
-
-        return sortedCollection(unsortedMap);
-    }
-
-    private Map<String, Integer> sortedCollection(Map<String, Integer> unsortedMap){
-        return unsortedMap.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue())
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (e1, e2) -> e1,
-                        LinkedHashMap::new
-                ));
+        return filterLemmasBySiteName.filterLemmas(unsortedMap, siteUrl);
     }
 
     private Map<String, Integer> getLemmasAndFrequencyFromDB(String lemma){
