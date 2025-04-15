@@ -13,7 +13,7 @@ import searchengine.services.impl.StatisticsService;
 import searchengine.services.indexing.CheckLinkInScopeLinks;
 import searchengine.services.indexing.IndexingOnePage;
 import searchengine.services.indexing.SitesIndexingService;
-import searchengine.services.search.SortedLemmas;
+import searchengine.services.search.GetPageByQueryWords;
 import searchengine.utils.UrlUtils;
 
 import java.util.HashMap;
@@ -29,7 +29,7 @@ public class ApiController {
     private final IndexingStatusManager indexingStatusManager;
     private final IndexingOnePage indexingOnePage;
     private final CheckLinkInScopeLinks checkLinkInScopeLinks;
-    private final SortedLemmas sortedLemmas;
+    private final GetPageByQueryWords getPageByQueryWords;
 
     public static final Logger logger = LoggerFactory.getLogger(ApiController.class);
 
@@ -39,14 +39,14 @@ public class ApiController {
                          IndexingStatusManager indexingStatusManager,
                          IndexingOnePage indexingOnePage,
                          CheckLinkInScopeLinks checkLinkInScopeLinks,
-                         SortedLemmas sortedLemmas) {
+                         GetPageByQueryWords getPageByQueryWords) {
         this.statisticsService = statisticsService;
         this.sitesIndexingService = sitesIndexingService;
         this.indexingSettings = indexingSettings;
         this.indexingStatusManager = indexingStatusManager;
         this.indexingOnePage = indexingOnePage;
         this.checkLinkInScopeLinks = checkLinkInScopeLinks;
-        this.sortedLemmas = sortedLemmas;
+        this.getPageByQueryWords = getPageByQueryWords;
     }
 
     @GetMapping("/statistics")
@@ -83,7 +83,6 @@ public class ApiController {
     @GetMapping("/stopIndexing")
     public ResponseEntity<Map<String, Object>> stopIndexing() {      //TODO Настроить стоп по требованию.
                                                                      // кнопка появляется, если дождаться окончания полной иднексации*.
-
 
         logger.info("Остановка по кнопке 'stop indexing'...");
 
@@ -140,8 +139,6 @@ public class ApiController {
             @RequestParam(required = false) String query,
             @RequestParam(required = false, defaultValue = "ALL") String site){
 
-        System.out.println("Сайт: " + site);
-
         Map<String, Object> response = new HashMap<>();
 
         if (query == null || query.trim().isEmpty()){
@@ -151,8 +148,7 @@ public class ApiController {
         }
 
         try {
-
-                sortedLemmas.sortingLemmasByFrequency(query, site);
+                getPageByQueryWords.getAndSortingLemmasAndFrequency(query, site);     //TODO Протестить на разных сценариях.
 
             response.put("result", true);
             return ResponseEntity.ok(response);

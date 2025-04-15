@@ -9,13 +9,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class FrequencyByLemmaName {                            //TODO Переименовать.
+public class GetFrequencyByLemmaName {
     private final LemmaRepository lemmaRepository;
     private final FilterLemmasBySiteName filterLemmasBySiteName;
-    private final Logger logger = LoggerFactory.getLogger(FrequencyByLemmaName.class);
+    private final Logger logger = LoggerFactory.getLogger(GetFrequencyByLemmaName.class);
 
-    public FrequencyByLemmaName(LemmaRepository lemmaRepository,
-                                FilterLemmasBySiteName filterLemmasBySiteName) {
+    public GetFrequencyByLemmaName(LemmaRepository lemmaRepository,
+                                   FilterLemmasBySiteName filterLemmasBySiteName
+    ) {
         this.lemmaRepository = lemmaRepository;
         this.filterLemmasBySiteName = filterLemmasBySiteName;
     }

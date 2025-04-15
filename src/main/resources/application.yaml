@@ -36,6 +36,8 @@ spring:
     hibernate:
       show-sql: false
 
+
+
 logging:
   file:
     name: logs/deadlocks.log

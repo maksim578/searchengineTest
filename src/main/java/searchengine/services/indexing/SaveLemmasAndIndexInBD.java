@@ -3,9 +3,6 @@ package searchengine.services.indexing;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import searchengine.models.Lemma;
-import searchengine.models.indexData;
-import searchengine.repositories.LemmaRepository;
 import searchengine.repositories.PageRepository;
 import searchengine.services.impl.LemmaIndexService;
 
@@ -13,15 +10,13 @@ import java.util.*;
 
 @Service
 public class SaveLemmasAndIndexInBD implements LemmaIndexService {
-    private final LemmaRepository lemmaRepository;
     private final PageRepository pageRepository;
     private final JdbcTemplate jdbcTemplate;
 
-
-    public SaveLemmasAndIndexInBD(LemmaRepository lemmaRepository,
-                                  PageRepository pageRepository,
-                                  JdbcTemplate jdbcTemplate) {
-        this.lemmaRepository = lemmaRepository;
+    public SaveLemmasAndIndexInBD(
+            PageRepository pageRepository,
+            JdbcTemplate jdbcTemplate
+    ) {
         this.pageRepository = pageRepository;
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -29,87 +24,66 @@ public class SaveLemmasAndIndexInBD implements LemmaIndexService {
     @Override
     @Transactional
     public void saveLemmasAndIndex(Integer pageId, Integer siteId, Map<String, Integer> lemmas) {
-
-        Set<String> countedLemmas = new HashSet<>(lemmas.keySet());
-
-        List<Lemma> existingLemmas = lemmaRepository.findByLemmaListForUpdate(new ArrayList<>(countedLemmas), siteId);
-        Map<String, Lemma> lemmaMap = new HashMap<>();
-        existingLemmas.forEach(l -> lemmaMap.put(l.getLemma(), l));
-
-        List<Lemma> newLemmas = new ArrayList<>();
-        List<indexData> indexes = new ArrayList<>();
+        if (lemmas.isEmpty()) return;
 
         int totalPages = pageRepository.countBySiteId(siteId);
 
-        lemmas.forEach((lemmaText, rank) -> {
-            Lemma lemma = lemmaMap.get(lemmaText);
+        List<Object[]> lemmaParams = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : lemmas.entrySet()) {
+            lemmaParams.add(new Object[]{entry.getKey(), siteId, 1, totalPages});
+        }
 
-            if (lemma == null) {
-                lemma = new Lemma();
-                lemma.setLemma(lemmaText);
-                lemma.setSiteId(siteId);
-                lemma.setFrequency(1);
-                newLemmas.add(lemma);
-            } else {
-                lemma.setFrequency(Math.min(lemma.getFrequency() + 1, totalPages));
+        batchInsertLemmas(lemmaParams);
+
+        Map<String, Integer> lemmaIdMap = fetchLemmaIds(lemmas.keySet(), siteId);
+
+        List<Object[]> indexParams = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : lemmas.entrySet()) {
+            Integer lemmaId = lemmaIdMap.get(entry.getKey());
+            if (lemmaId != null) {
+                indexParams.add(new Object[]{lemmaId, pageId, entry.getValue().floatValue()});
             }
+        }
 
-            indexData index = new indexData();
-            index.setLemmaId(lemma.getId());
-            index.setPageId(pageId);
-            index.setRank(rank.floatValue());
-            indexes.add(index);
+        batchInsertIndexes(indexParams);
+    }
+
+    private void batchInsertLemmas(List<Object[]> batchArgs) {
+        String sql = """
+                INSERT INTO lemma (lemma, site_id, frequency)
+                VALUES (?, ?, ?)
+                ON DUPLICATE KEY UPDATE frequency = LEAST(frequency + 1, ?)
+                """;
+
+        jdbcTemplate.batchUpdate(sql, batchArgs);
+    }
+
+    private Map<String, Integer> fetchLemmaIds(Set<String> lemmaTexts, int siteId) {
+        if (lemmaTexts.isEmpty()) return Collections.emptyMap();
+
+        String inSql = String.join(",", Collections.nCopies(lemmaTexts.size(), "?"));
+        String sql = "SELECT id, lemma FROM lemma WHERE site_id = ? AND lemma IN (" + inSql + ")";
+
+        List<Object> params = new ArrayList<>();
+        params.add(siteId);
+        params.addAll(lemmaTexts);
+
+        return jdbcTemplate.query(sql, params.toArray(), rs -> {
+            Map<String, Integer> map = new HashMap<>();
+            while (rs.next()) {
+                map.put(rs.getString("lemma"), rs.getInt("id"));
+            }
+            return map;
         });
-
-        batchInsertLemmas(newLemmas);
-
-        batchUpdateLemmaFrequencies(existingLemmas);
-
-        batchInsertIndexes(indexes);
     }
 
-    private void batchInsertLemmas(List<Lemma> lemmas) {
-        if (lemmas.isEmpty()) return;
-
-        String sql = "INSERT INTO lemma (lemma, site_id, frequency) VALUES (?, ?, ?) " +
-                "ON DUPLICATE KEY UPDATE frequency = frequency + 1";
-
-        List<Object[]> batchArgs = lemmas.stream()
-                .map(l -> new Object[]{l.getLemma(), l.getSiteId(), l.getFrequency()})
-                .toList();
-
-        jdbcTemplate.batchUpdate(sql, batchArgs);
-    }
-
-    private void batchUpdateLemmaFrequencies(List<Lemma> lemmas) {
-
-        if (lemmas.isEmpty()) return;
-
-        String sql = "UPDATE lemma SET frequency = ? WHERE id = ?";
-
-        List<Object[]> batchArgs = lemmas.stream()
-                .map(i -> new Object[]{i.getFrequency(), i.getId()})
-                .toList();
-
-        jdbcTemplate.batchUpdate(sql, batchArgs);
-    }
-
-    private void batchInsertIndexes(List<indexData> indexes) {
-
-        List<indexData> validIndexes = indexes.stream()
-                .filter(i -> i.getLemmaId() != null)
-                .toList();
-
-        if (validIndexes.isEmpty()) return;
-
-        String sql = "INSERT INTO index_data (lemma_id, page_id, `rank`) VALUES (?, ?, ?) " +
-                "ON DUPLICATE KEY UPDATE `rank` = VALUES(`rank`)";
-
-        List<Object[]> batchArgs = validIndexes.stream()
-                .map(i -> new Object[]{i.getLemmaId(), i.getPageId(), i.getRank()})
-                .toList();
+    private void batchInsertIndexes(List<Object[]> batchArgs) {
+        String sql = """
+                INSERT INTO index_data (lemma_id, page_id, `rank`)
+                VALUES (?, ?, ?)
+                ON DUPLICATE KEY UPDATE `rank` = VALUES(`rank`)
+                """;
 
         jdbcTemplate.batchUpdate(sql, batchArgs);
     }
 }
-

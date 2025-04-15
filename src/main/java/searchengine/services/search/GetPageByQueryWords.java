@@ -6,25 +6,26 @@ import searchengine.services.indexing.LemmaAnalyzerService;
 import java.util.Map;
 
 @Service
-public class SortedLemmas {    //TODO переименовать имя класса.
+public class GetPageByQueryWords {
     private final LemmaAnalyzerService lemmaAnalyzerService;
-    private final FrequencyByLemmaName frequencyByLemmaName;
+    private final GetFrequencyByLemmaName getFrequencyByLemmaName;
     private final PageSearchForARareLemma pageSearchForARareLemma;
 
-    public SortedLemmas(LemmaAnalyzerService lemmaAnalyzerService,
-                        FrequencyByLemmaName frequencyByLemmaName,
-                        PageSearchForARareLemma pageSearchForARareLemma) {
+    public GetPageByQueryWords(LemmaAnalyzerService lemmaAnalyzerService,
+                               GetFrequencyByLemmaName getFrequencyByLemmaName,
+                               PageSearchForARareLemma pageSearchForARareLemma
+    ) {
         this.lemmaAnalyzerService = lemmaAnalyzerService;
-        this.frequencyByLemmaName = frequencyByLemmaName;
+        this.getFrequencyByLemmaName = getFrequencyByLemmaName;
         this.pageSearchForARareLemma = pageSearchForARareLemma;
     }
 
-    public void sortingLemmasByFrequency(String textFromApi, String siteUrl){      //TODO переименовать имя метода.
+    public void getAndSortingLemmasAndFrequency(String textFromApi, String siteUrl){
 
         Map<String, Integer> lemmasFromText = lemmaAnalyzerService.getLemmas(textFromApi);
         String[] sortedLemmasArr = lemmasFromText.keySet().toArray(new String[0]);
 
-        Map<String, Integer> filteredFrequencyAndLemmas = frequencyByLemmaName.getFrequencyAndLemma(sortedLemmasArr, siteUrl);
+        Map<String, Integer> filteredFrequencyAndLemmas = getFrequencyByLemmaName.getFrequencyAndLemma(sortedLemmasArr, siteUrl);
         pageSearchForARareLemma.GetIdsLemmaAndIdsPageByLemma(filteredFrequencyAndLemmas);
     }
 }

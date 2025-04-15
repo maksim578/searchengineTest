@@ -24,7 +24,6 @@ public class FilterLemmasBySiteName {
     public Map<String, Integer> filterLemmas(Map<String, Integer> lemmasMap, String siteUrl){
 
         if (siteUrl.equals("ALL")){
-            logger.info("Фильтрация не требуется.");  //TODO Удалить.
             return lemmasMap;
         }
 
@@ -36,7 +35,6 @@ public class FilterLemmasBySiteName {
             String lemma = entry.getKey();
 
             int lemmaSiteId = lemmaRepository.findSiteIdByLemmaName(lemma);
-            logger.info("Получили ID сайта для леммы: {}", lemmaSiteId);
 
             if (lemmaSiteId != siteId){
                 logger.info("Удаление леммы, так как она не проходит филтрацию по ID сайта: {}", lemma);  //TODO Протестить.

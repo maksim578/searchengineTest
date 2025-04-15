@@ -168,6 +168,13 @@
                 columnNames="page_id, lemma_id"
                 constraintName="unique_index_page_lemma"/>
     </changeSet>
+    <changeSet id="add-index-lemma-page" author="maksim">
+        <createIndex indexName="idx_lemma_id_page_id"
+                     tableName="index_data">
+            <column name="lemma_id"/>
+            <column name="page_id"/>
+        </createIndex>
+    </changeSet>
     <changeSet author="developer" id="5">
         <sql>
             CREATE TRIGGER delete_unused_lemmas AFTER DELETE ON index_data
